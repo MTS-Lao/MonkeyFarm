@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Edit' if monkey else 'Create' }} Monkey - Monkey Farm Management System{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4">
+    <div class="max-w-3xl mx-auto">
+        <!-- Header -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">{{ 'Edit' if monkey else 'Create New' }} Monkey</h1>
+        </div>
+
+        <!-- Form -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <form method="POST" id="monkeyForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Code -->
+                    <div>
+                        <label for="code" class="block text-sm font-medium text-gray-700">Monkey Code*</label>
+                        <input type="text" name="code" id="code" required
+                               value="{{ monkey.code if monkey else '' }}"
+                               class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+
+                    <!-- House/Case -->
+                    <div>
+                        <label for="case_id" class="block text-sm font-medium text-gray-700">House/Case*</label>
+                        <select name="case_id" id="case_id" required
+                                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="">Select House/Case</option>
+                            {% for case in cases %}
+                            <option value="{{ case.id }}" {{ 'selected' if monkey and monkey.case_id == case.id else '' }}>
+                                {{ case.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Birthday -->
+                    <div>
+                        <label for="birthday" class="block text-sm font-medium text-gray-700">Birth Date*</label>
+                        <input type="date" name="birthday" id="birthday" required
+                               value="{{ monkey.birthday.strftime('%Y-%m-%d') if monkey and monkey.birthday else '' }}"
+                               class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+
+                    <!-- Gender -->
+                    <div>
+                        <label for="gender" class="block text-sm font-medium text-gray-700">Gender*</label>
+                        <select name="gender" id="gender" required
+                                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="">Select Gender</option>
+                            <option value="M" {{ 'selected' if monkey and monkey.gender == 'M' else '' }}>Male</option>
+                            <option value="F" {{ 'selected' if monkey and monkey.gender == 'F' else '' }}>Female</option>
+                        </select>
+                    </div>
+
+                    <!-- Father -->
+                    <div>
+                        <label for="father" class="block text-sm font-medium text-gray-700">Father Code</label>
+                        <input type="text" name="father" id="father"
+                               value="{{ monkey.father if monkey else '' }}"
+                               class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+
+                    <!-- Mother -->
+                    <div>
+                        <label for="mother" class="block text-sm font-medium text-gray-700">Mother Code</label>
+                        <input type="text" name="mother" id="mother"
+                               value="{{ monkey.mother if monkey else '' }}"
+                               class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+
+                    <!-- Special Characteristics -->
+                    <div class="md:col-span-2">
+                        <label for="special_characteristics" class="block text-sm font-medium text-gray-700">
+                            Special Characteristics
+                        </label>
+                        <textarea name="special_characteristics" id="special_characteristics" rows="3"
+                                  class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">{{ monkey.special_characteristics if monkey else '' }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="mt-6 flex items-center justify-end space-x-4">
+                    <button type="button" onclick="window.location.href='/monkeys'"
+                            class="bg-gray-200 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="bg-indigo-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        {{ 'Save Changes' if monkey else 'Create Monkey' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('monkeyForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    try {
+        const response = await fetch('{{ "/api/v1/monkeys/" + monkey.id|string if monkey else "/api/v1/monkeys" }}', {
+            method: '{{ "PUT" if monkey else "POST" }}',
+            body: formData
+        });
+        
+        if (response.ok) {
+            window.location.href = '/monkeys';
+        } else {
+            const error = await response.json();
+            alert(error.detail || 'Error saving monkey');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error saving monkey');
+    }
+});
+</script>
+{% endblock %}

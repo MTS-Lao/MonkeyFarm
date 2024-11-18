@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Vannaseng Trading - Monkey Farm Management System{% endblock %}</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    {% if request.state.user %}
+<!-- Navigation -->
+<nav class="bg-gray-800 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <span class="text-xl font-bold">Vannaseng Trading</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        {% if request.state.user.is_admin %}
+                        <a href="/dashboard" class="px-3 py-2 rounded-md text-sm font-medium {% if request.url.path == '/dashboard' %}bg-gray-900{% endif %}">Dashboard</a>
+                        {% endif %}
+                        <a href="/monkeys" class="px-3 py-2 rounded-md text-sm font-medium {% if request.url.path.startswith('/monkeys') %}bg-gray-900{% endif %}">Monkeys</a>
+                        <a href="/vaccines" class="px-3 py-2 rounded-md text-sm font-medium {% if request.url.path.startswith('/vaccines') %}bg-gray-900{% endif %}">Vaccines</a>
+                        {% if request.state.user.is_admin %}
+                        <a href="/settings" class="px-3 py-2 rounded-md text-sm font-medium {% if request.url.path == '/settings' %}bg-gray-900{% endif %}">Settings</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="hidden md:block">
+                <div class="ml-4 flex items-center md:ml-6">
+                    <span class="text-sm">{{ request.state.user.username }}</span>
+                    <a href="/logout" class="ml-4 px-3 py-2 rounded-md text-sm font-medium bg-red-600 hover:bg-red-700">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    {% endif %}
+
+    <!-- Page Content -->
+    <main class="container mx-auto px-4 py-8">
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="mb-4 p-4 rounded-md {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-4 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 Monkey Farm Management System. All rights reserved. Design & Develop by <a href="https://mts.la" target="_blank">MTS</a></p>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
