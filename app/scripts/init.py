@@ -9,13 +9,14 @@ async def init_db():
     db = SessionLocal()
     try:
         # Create initial admin user
-        admin_user = crud.user.get_by_username(db, username="admin")
+        admin_user = db.query(User).filter(User.username == "admin").first()
         if not admin_user:
-            user_in = {
-                "username": "admin",
-                "password": get_password_hash("admin123"),
-                "is_admin": True
-            }
+            user_in = UserCreate(
+                username="admin",
+                password="admin123",
+                phone=None,
+                is_admin=True
+            )
             crud.user.create(db, obj_in=user_in)
             print("Created admin user")
 
