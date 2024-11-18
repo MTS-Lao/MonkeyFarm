@@ -3,6 +3,7 @@ from app.database import SessionLocal
 from app.models import Base, User
 from app.core.security import get_password_hash
 from app.schemas.user import UserCreate
+from app.schemas.monkey_case import MonkeyCaseCreate
 from app import crud
 
 async def init_db():
@@ -26,7 +27,7 @@ async def init_db():
         for case_name in initial_cases:
             existing_case = crud.monkey_case.get_by_name(db, name=case_name)
             if not existing_case:
-                case_in = {"name": case_name}
+                case_in = MonkeyCaseCreate(name=case_name)
                 crud.monkey_case.create(db, obj_in=case_in)
                 print(f"Created case: {case_name}")
 
