@@ -1,8 +1,8 @@
 import asyncio
 from app.database import SessionLocal
-from app.models import Base
+from app.models import Base, User
 from app.core.security import get_password_hash
-from app.models import User
+from app.schemas.user import UserCreate
 from app import crud
 
 async def init_db():
@@ -14,6 +14,7 @@ async def init_db():
             user_in = UserCreate(
                 username="admin",
                 password="admin123",
+                confirm_password="admin123",
                 phone=None,
                 is_admin=True
             )
