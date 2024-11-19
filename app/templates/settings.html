@@ -271,35 +271,21 @@ document.getElementById('userForm').addEventListener('submit', async function(e)
     // Convert is_admin string to boolean
     formData.set('is_admin', formData.get('is_admin') === 'true');
     
-    // Only include password fields if a new password is being set
-    const password = formData.get('password');
-    const confirmPassword = formData.get('confirm_password');
-    
-    if (!password && !confirmPassword) {
-        formData.delete('password');
-        formData.delete('confirm_password');
-    }
-    
     try {
-        const response = await fetch(`/api/v1/users${id ? `/${id}` : ''}`, {
+        const response = await fetch(`/api/v1/users/${id ? id : ''}`, {  // Always include trailing slash
             method: id ? 'PUT' : 'POST',
-            body: formData
+            body: formData,
+            credentials: 'include'  // Include cookies for authentication
         });
-        
-        const data = await response.json();
         
         if (response.ok) {
             closeUserModal();
             window.location.reload();
         } else {
-            // Show error message
+            const data = await response.json();
             const errorDiv = document.getElementById('formError');
             errorDiv.textContent = data.detail || 'Error saving user';
             errorDiv.classList.remove('hidden');
-            // Hide error after 5 seconds
-            setTimeout(() => {
-                errorDiv.classList.add('hidden');
-            }, 5000);
         }
     } catch (error) {
         console.error('Error:', error);
