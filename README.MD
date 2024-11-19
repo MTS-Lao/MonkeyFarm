@@ -63,3 +63,20 @@ python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
+3. **Configure environment**
+```bash
+cp .env.example .env
+# Edit .env with your configurations
+```
+4. **Initialize database**
+
+```bash
+alembic upgrade head
+python app/scripts/setup_users.py
+```
+
+5. **Run development server**
+
+```bash
+uvicorn app.main:app --reload
+```
