@@ -20,6 +20,7 @@ def get_users(
     return crud_user.get_multi(db, skip=skip, limit=limit)
 
 @router.post("/", response_model=user_schemas.User)
+@router.post("", response_model=user_schemas.User)
 def create_user(
     db: Session = Depends(deps.get_db),
     username: str = Form(...),
